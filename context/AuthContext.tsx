@@ -20,6 +20,8 @@ type AuthContextType = {
   setIsLoggedIn: Dispatch<SetStateAction<User | undefined>>;
   loginWithGoogle: () => void;
   logoutUser: () => void;
+  signoutDialogOpen: boolean;
+  setSignoutDialogOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -28,6 +30,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<User | undefined>();
+  const [signoutDialogOpen, setSignoutDialogOpen] = useState(false);
 
   async function loginWithGoogle() {
     const provider = new GoogleAuthProvider();
@@ -53,6 +56,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   async function logoutUser() {
     try {
       await signOut(auth);
+      setSignoutDialogOpen(false);
     } catch (error) {
       console.log("error while signing out", error);
     }
@@ -60,7 +64,14 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, setIsLoggedIn, loginWithGoogle, logoutUser }}
+      value={{
+        isLoggedIn,
+        setIsLoggedIn,
+        loginWithGoogle,
+        logoutUser,
+        signoutDialogOpen,
+        setSignoutDialogOpen,
+      }}
     >
       {children}
     </AuthContext.Provider>

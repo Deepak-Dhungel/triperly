@@ -1,5 +1,5 @@
 export type TripUserInputType = {
-  location: string | undefined;
+  location: string;
   noOfDays: string;
   budget: string;
   travellingWith: string;

@@ -1,76 +1,3 @@
-// import {
-//   GoogleGenerativeAI,
-//   GenerateContentResult,
-// } from "@google/generative-ai";
-
-// const genAI = new GoogleGenerativeAI("AIzaSyAbU4MDY2Hz6guHiCnUFfN5qHLTf0_62Yo");
-
-// export async function fetchTripRecommendations() {
-//   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-//   // Prepare the Gemini API request body using user input
-//   const geminiPrompt = `
-//     You are an intelligent travel assistant helping users plan trips by providing tailored recommendations. Based on the input provided, generate the best travel experience with the following details:
-
-//     User Input:
-//     1. Location: Kathmandu
-//     2. Budget: low
-//     3. Traveling With: solo
-//     4. Trip Duration: 3 days
-
-//     Output (in JSON format):
-//     {
-//       "tripSummary": {
-//         "summaryText": "A brief summary of the recommended trip.",
-//         "totalCost": "Estimated total cost for the trip."
-//       },
-//       "hotelRecommendations": [
-//         {
-//           "name": "Hotel Name",
-//           "pricePerNight": "Hotel price per night in local currency",
-//           "rating": "Hotel rating out of 5",
-//           "description": "A brief description of the hotel."
-//         }
-//         // provide 4 hotel recommendations
-//       ],
-//       "itinerary": [
-//         {
-//           "day": 1,
-//           "places": [
-//             {
-//               "name": "Place Name",
-//               "description": "A brief description of the place.",
-//               "placeId": "PLACE_ID", // Include Place ID for Google Places API
-//               "approxExpenses": "Approximate expenses in local currency.",
-//               "bestTimeToVisit": "Suggested time to visit the place."
-//             }
-//               // Add multiple places that can be covered in a day
-//           ]
-//         }
-//           // Repeat for each day of the trip.
-//       ],
-//       "costBreakdown": {
-//         "accommodation": "Total accommodation cost for the trip.",
-//         "transportation": "Estimated transportation expenses.",
-//         "activities": "Cost of activities and excursions.",
-//         "meals": "Estimated cost of food and beverages."
-//       }
-//     }
-//     `;
-
-//   try {
-//     const geminiData = await model.generateContent([geminiPrompt]);
-//     const response = geminiData.response.text();
-
-//     const formatResponse = response.replace(/```json\s?|\s?```/g, "").trim();
-//     const parsedGeminiData = JSON.parse(formatResponse);
-//     return parsedGeminiData;
-//   } catch (error) {
-//     console.error("Error fetching trip recommendations:", error);
-//     throw error;
-//   }
-// }
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -80,7 +7,7 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
 });
 
 const generationConfig = {

@@ -20,9 +20,13 @@
 }
 
 :root {
-  --background: #FAF9F6;
+  --background: #faf9f6;
   --text: #1f2937;
+  --text-secondary: #3c444e;
   --gradient1: #f7e9c5;
   --gradient2: #fed9fa;
   --gradient3: #e3f2fd;
+  --accent: #ff4403;
+  --accent-light: #ff7c4f;
+  --bg-high: #f6f3e6;
 }

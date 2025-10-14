@@ -76,11 +76,13 @@ export function ItinearyItemCard({ place }: ItinearyItemCardType) {
   //     );
   //   }
   return (
-    <div className="mt-10 flex justify-between gap-20 items-center p-6 border-2 rounded-xl border-gray-300 w-full hover:backdrop-blur-sm hover:bg-white/30 ">
+    <div className="mt-10 flex flex-col md:flex-row justify-between gap-20 items-left p-6 border-2 rounded-xl border-white  w-full hover:backdrop-blur-sm hover:bg-[--background]">
       <div className="flex flex-col justify-between">
         <div className="flex flex-col">
           <span className="text-xl font-semibold">{place.name}</span>
-          <span className="mt-2 text-gray-600">{place.description}</span>
+          <span className="mt-2 text-[--text-secondary] font-light">
+            {place.description}
+          </span>
         </div>
         <div className="mt-10 flex flex-col gap-4">
           <span>🕗 {place.bestTimeToVisit}</span>
@@ -88,13 +90,13 @@ export function ItinearyItemCard({ place }: ItinearyItemCardType) {
         </div>
       </div>
 
-      <Image
+      {/* <Image
         src={imageSrc || placeholder}
         alt="location"
         height={150}
         width={150}
         className="rounded-xl object-fill"
-      />
+      /> */}
     </div>
   );
 }

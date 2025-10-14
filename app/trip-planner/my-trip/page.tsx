@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image, { StaticImageData } from "next/image";
-import { BsBookmarkFill, BsBookmark } from "react-icons/bs";
+import { BsBookmarkFill } from "react-icons/bs";
 import { TripDataType, TripUserInputType } from "@/types/trip.types";
-import { fetchPlacePhoto, getPlaceDetail } from "@/service/googlePlaceApi";
-import axios from "axios";
 import placeholder from "@/public/paris.jpg";
 import { HotelCard } from "@/components/my-trip/HotelCard";
 import { ItineraryCard } from "@/components/my-trip/ItineraryCard";
 import { AuthContext } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
+
+// import Placeholder from "@/public/places/paris.jpg";
+import BookmarkIcon from "@/public/bookmark-icon.png";
+import { usePathname } from "next/navigation";
 
 function Result() {
   const [userInputData, setUserInputData] = useState<TripUserInputType | null>(
@@ -18,136 +20,234 @@ function Result() {
   );
   const [tripData, setTripData] = useState<TripDataType>({} as TripDataType);
   const [showSaveBtn, setShowSaveBtn] = useState(false);
+  const [placePhoto, setPlacePhoto] = useState<string | StaticImageData>("");
   const { isLoggedIn } = useContext(AuthContext);
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (window.scrollY > 100) {
+  //       setShowSaveBtn(true);
+  //     } else {
+  //       setShowSaveBtn(false);
+  //     }
+  //   };
+
+  //   window.addEventListener("scroll", handleScroll);
+
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
+
+  // useEffect to get user input and gemini response data from session storage during initial render and save it to state variables
+  // inside Result component (replace your useEffect and the Image block)
+
+  // inside Result component
+  const pathname = usePathname();
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setShowSaveBtn(true);
-      } else {
-        setShowSaveBtn(false);
-      }
-    };
+    // read sessionStorage whenever pathname changes (covers the navigation moment)
+    const storedUserInput = localStorage.getItem("userInput");
+    const storedTripData = localStorage.getItem("tripData");
+    const storedPlacePhotoRaw = localStorage.getItem("placePhoto");
 
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const storedUserInput = sessionStorage.getItem("userInput");
-    const storedTripData = sessionStorage.getItem("tripData");
-
+    // parse userInput
     if (storedUserInput) {
       try {
-        const parsedUserInput = JSON.parse(storedUserInput);
-        setUserInputData(parsedUserInput);
-      } catch (error) {
-        console.error("Error parsing user input data:", error);
+        setUserInputData(JSON.parse(storedUserInput));
+      } catch (err) {
+        console.warn("userInput JSON.parse failed:", err);
       }
-    } else {
-      console.warn("No user input data found in Session Storage.");
     }
 
+    // parse tripData
     if (storedTripData) {
       try {
-        const parsedTripData = JSON.parse(storedTripData);
-        console.log(parsedTripData);
-        setTripData(parsedTripData);
-      } catch (error) {
-        console.error("Error parsing trip data:", error);
+        setTripData(JSON.parse(storedTripData));
+      } catch (err) {
+        console.warn("tripData JSON.parse failed:", err);
+      }
+    }
+
+    // normalize placePhoto to a plain URL string (or empty string)
+    let finalPhoto: string | null = null;
+    if (storedPlacePhotoRaw) {
+      const raw = storedPlacePhotoRaw.trim();
+      // If it looks like JSON try parse, else use raw
+      if (raw.startsWith("{") || raw.startsWith("[")) {
+        try {
+          const parsed = JSON.parse(raw);
+          // common shapes: string, { image: "..."} , { url: "..." } , array
+          if (typeof parsed === "string") finalPhoto = parsed;
+          else if (Array.isArray(parsed) && parsed.length) {
+            const first = parsed[0];
+            finalPhoto = first?.image ?? first?.url ?? first?.src ?? null;
+          } else if (parsed && typeof parsed === "object") {
+            finalPhoto = parsed.image ?? parsed.url ?? parsed.src ?? null;
+          }
+        } catch (err) {
+          console.warn("placePhoto JSON.parse failed, using raw:", err);
+          finalPhoto = raw;
+        }
+      } else {
+        finalPhoto = raw; // plain url
       }
     } else {
-      console.warn("No trip data found in Session Storage.");
+      console.warn("no placePhoto found in sessionStorage");
     }
-  }, []);
 
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+    console.log("[DEBUG] resolved finalPhoto:", finalPhoto);
+    setPlacePhoto(finalPhoto ?? "");
+  }, [pathname]);
 
-  useEffect(() => {
-    const loadImage = async () => {
-      if (userInputData?.location) {
-        const src = await fetchPlacePhoto(userInputData.location);
-        setImageSrc(src);
-      }
-    };
-    loadImage();
-  }, [userInputData?.location]);
+  // const [imageSrc, setImageSrc] = useState<string>("");
+
+  // useEffect(() => {
+  //   const loadImage = async () => {
+  //     if (userInputData?.location) {
+  //       const src = await fetchPlacePhoto(userInputData.location);
+  //       if (src) {
+  //         setImageSrc(src);
+  //       }
+  //     }
+  //   };
+  //   loadImage();
+  // }, [userInputData?.location]);
 
   // Render a fallback if the image URL isn't available yet
-  if (!imageSrc) {
-    return <div>Loading image...</div>;
+  // if (!imageSrc) {
+  //   return <div>Loading image...</div>;
+  // }
+
+  function handleSaveTrip() {
+    //check if user is logged in
+    if (!isLoggedIn) {
+      // router.push("/login?redirect=/trip-planner/my-trip");
+    }
+
+    //if not logged in, take to login page
+
+    //else add data to firestore db
   }
 
+  // redirect to trip-planner page if userInputData or tripData is null
+  // if (!userInputData || !tripData) return router.push("/");
 
-  function handleSaveTrip(){
-     //check if user is logged in
-   if(!isLoggedIn){
-    router.push("/login?redirect=/trip-planner/my-trip");
-   }
+  const bannerImageChipsClass =
+    "border-[2px] border-white bg-[--bg-high] w-fit py-1 px-4 rounded-full flex items-center gap-2";
 
-   //if not logged in, take to login page
-
-   //else add data to firestore db
-  }
-
-
-  if (!userInputData || !tripData) return <p>Loading...</p>;
+  const recommendationCardClass =
+    "mt-12 rounded-2xl bg-[--bg-high] drop-shadow-2xl flex flex-col justify-center items-start p-6 md:p-10";
 
   return (
-    <div className="my-10 px-4 md:px-28 z-[9] relative">
+    <div className="mt-32 relative w-[90%] lg:w-[60%] mx-auto">
+      {/* location image with details */}
       <div className="flex flex-col relative">
         <div className="w-full h-[450px] relative">
-          <Image
-            src={imageSrc}
-            alt="location"
-            fill
-            className="rounded-xl object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority
-          />
+          {/* debug overlay (remove later) */}
+          {/* <div className="absolute left-2 top-2 z-50 bg-[--bg-high] text-xs p-2 rounded opacity-90">
+            <div>
+              photo: {String(placePhoto).slice(0, 120)}
+              {String(placePhoto).length > 120 ? "…" : ""}
+            </div>
+          </div> */}
+
+          {typeof placePhoto === "string" && placePhoto.length > 0 ? (
+            // If external URL, use <img> so you don't need next.config change
+            /^https?:\/\//i.test(placePhoto) ? (
+              <Image
+                src={placePhoto}
+                alt={userInputData?.location ?? "location"}
+                width={1200}
+                height={450}
+                className="w-full h-full object-cover rounded-xl block"
+                // onError={(e) => {
+                //   console.error(
+                //     "External image failed to load, falling back:",
+                //     placePhoto
+                //   );
+                //   (e.currentTarget as HTMLImageElement).src = placeholder.src;
+                // }}
+              />
+            ) : (
+              // treat as local path (starts with "/") or data URL — use next/image for best optimization
+              <Image
+                src={placePhoto || placeholder}
+                alt={userInputData?.location ?? "location"}
+                fill={false} // explicit: not using fill to avoid confusion; remove if you use width/height
+                // Provide a fixed layout instead of fill, or use a wrapper with position:relative and fill
+                width={1200}
+                height={450}
+                className="rounded-xl object-cover"
+              />
+            )
+          ) : (
+            // fallback UI when nothing available
+            <div className="w-full h-full flex items-center justify-center rounded-xl bg-gray-200 text-gray-600">
+              No photo available
+            </div>
+          )}
         </div>
-        <div className="absolute left-2 bottom-2 mt-4 flex gap-4 text-sm font-medium">
-          <span className="border-[1px] bg-white py-1 px-4 rounded-full">
-            📅 {userInputData.noOfDays} Day(s) during{" "}
-            {userInputData.travelMonth}
+
+        <div className="absolute left-2 bottom-2 mt-4 flex flex-col lg:flex-row gap-4 text-sm font-medium">
+          <span className={bannerImageChipsClass}>
+            📅
+            <span>
+              {userInputData?.noOfDays} Day(s) during{" "}
+              {userInputData?.travelMonth}
+            </span>
           </span>
-          <span className="border-[1px] bg-white py-1 px-4 rounded-full">
-            ✈️ {userInputData.travellingWith}
+          <span className={bannerImageChipsClass}>
+            ✈️ <span>{userInputData?.travellingWith}</span>
           </span>
-          <span className="border-[1px] bg-white py-1 px-4 rounded-full">
-            💰 {tripData?.tripSummary?.totalCost}
+          <span className={bannerImageChipsClass}>
+            💰 <span>{tripData?.tripSummary?.totalCost}</span>
           </span>
         </div>
-        <div className="p-2 bg-white border-2 rounded-full absolute right-2 bottom-2 shadow-xl cursor-pointer transform transition-transform duration-300 ease-in-out hover:scale-105">
-          <BsBookmark size={25} />
-        </div>
+        {/* <div className="absolute right-2 bottom-2 cursor-pointer transform transition-transform duration-300 ease-in-out hover:scale-105">
+          <span className={bannerImageChipsClass}>
+            <Image src={BookmarkIcon} alt="bookmark" width={25} height={25} />
+            <span>Save this trip</span>
+          </span>
+        </div> */}
       </div>
 
       <div className="mt-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-4xl font-bold">{userInputData.location}</span>
-            <span className="mt-2 text-sm text-gray-800 font-normal">
+            <div className="flex justify-between items-center">
+              <span className="text-4xl font-bold">
+                {userInputData?.location}
+              </span>
+              <span className="flex gap-2 bg-[--bg-high] hover:bg-[--background] rounded-full py-1 px-4 border-[2px] hover:border-[--accent] cursor-pointer transition-transform hover:scale-105 ease-in-out hover:drop-shadow-xl">
+                <Image
+                  src={BookmarkIcon}
+                  alt="bookmark"
+                  width={25}
+                  height={25}
+                />
+                <span>Save this trip</span>
+              </span>
+            </div>
+
+            <span className="mt-4 text-md text-[--text-secondary] font-normal">
               {tripData?.tripSummary?.summaryText}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="mt-12 rounded-2xl bg-gradient-to-br from-gradient1 via-gradient2 to-gradient3 drop-shadow-2xl flex flex-col justify-center items-start p-6 md:p-10">
+      <div className={recommendationCardClass}>
         <div className="flex flex-col w-full">
           <span className="text-2xl font-bold">Hotel Recommendation</span>
-          <span className="text-md text-gray-600">
+          <span className="text-md text-[--text-secondary] font-normal mt-2">
             Top Hotels in{" "}
             <span className="font-semibold text-gray-800">
-              {userInputData.location}
+              {userInputData?.location}
             </span>{" "}
             Based on your Interest
           </span>
-          <div className="mt-10 flex justify-between">
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {tripData?.hotelRecommendations?.map((hotel, idx) => (
               <HotelCard key={idx} hotelInfo={hotel} />
             ))}
@@ -155,13 +255,14 @@ function Result() {
         </div>
       </div>
 
-      <div className="mt-12 rounded-2xl bg-gradient-to-br from-gradient1 via-gradient2 to-gradient3 drop-shadow-2xl flex flex-col justify-center items-start p-6 md:p-10">
+      <div className={recommendationCardClass}>
         <div className="flex flex-col w-full">
           <span className="text-2xl font-bold">Travel Itinerary</span>
           <div className="flex flex-col gap-10">
-            {tripData.itinerary.map((item, idx) => (
-              <ItineraryCard key={idx} itineraryInfo={item} />
-            ))}
+            {tripData &&
+              tripData?.itinerary?.map((item, idx) => (
+                <ItineraryCard key={idx} itineraryInfo={item} />
+              ))}
           </div>
         </div>
       </div>
