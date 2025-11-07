@@ -8,9 +8,6 @@ import placeholder from "@/public/paris.jpg";
 import { HotelCard } from "@/components/my-trip/HotelCard";
 import { ItineraryCard } from "@/components/my-trip/ItineraryCard";
 import { AuthContext } from "@/context/AuthContext";
-import { useRouter, useSearchParams } from "next/navigation";
-
-// import Placeholder from "@/public/places/paris.jpg";
 import BookmarkIcon from "@/public/bookmark-icon.png";
 import { usePathname } from "next/navigation";
 
@@ -22,31 +19,11 @@ function Result() {
   const [showSaveBtn, setShowSaveBtn] = useState(false);
   const [placePhoto, setPlacePhoto] = useState<string | StaticImageData>("");
   const { isLoggedIn } = useContext(AuthContext);
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     if (window.scrollY > 100) {
-  //       setShowSaveBtn(true);
-  //     } else {
-  //       setShowSaveBtn(false);
-  //     }
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
-
-  // useEffect to get user input and gemini response data from session storage during initial render and save it to state variables
-  // inside Result component (replace your useEffect and the Image block)
-
-  // inside Result component
   const pathname = usePathname();
 
   useEffect(() => {
-    // read sessionStorage whenever pathname changes (covers the navigation moment)
+    // read local storage whenever pathname changes (covers the navigation moment)
     const storedUserInput = localStorage.getItem("userInput");
     const storedTripData = localStorage.getItem("tripData");
     const storedPlacePhotoRaw = localStorage.getItem("placePhoto");
