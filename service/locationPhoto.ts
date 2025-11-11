@@ -15,11 +15,15 @@ const fetchDataIdFromSerpAPI = async (location: string) => {
 
 //fetch location photo url using data id from serpapi
 const fetchLocationPhotoFromSerpAPI = async (dataId: string) => {
-  const res = await fetch(
-    `/api/serp/photo?data_id=${encodeURIComponent(dataId)}`
-  );
-  const photoURL = await res.json();
-  return photoURL;
+  try {
+    const res = await fetch(
+      `/api/serp/photo?data_id=${encodeURIComponent(dataId)}`
+    );
+    const photoURL = await res.json();
+    return photoURL;
+  } catch (error) {
+    console.error("Error fetching location photo from SerpAPI:", error);
+  }
 };
 
 export const getLocationPhoto = async (location: string) => {

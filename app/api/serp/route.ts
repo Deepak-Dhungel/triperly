@@ -20,10 +20,16 @@ export async function GET(req: Request) {
   try {
     const response = await fetch(api_url);
     const data = await response.json();
+
+    if (!data.place_results || !data.place_results.data_id) {
+      return NextResponse.json({ error: "No data ID found", status: 404 });
+    }
+
     const dataId = data.place_results.data_id;
-    console.log("dataId:", dataId);
+
     return NextResponse.json(dataId);
   } catch (error) {
     console.error("Error fetching data ID from SerpAPI:", error);
+    return NextResponse.json({ error: "Failed to fetch data ID", status: 500 });
   }
 }

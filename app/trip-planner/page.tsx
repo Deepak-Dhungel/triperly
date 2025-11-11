@@ -87,6 +87,14 @@ function TripPlanner() {
         });
         const geminiResponse = await connectWithGemini.json();
         console.log("first", geminiResponse);
+
+        //store trip data in local storage
+        if (geminiResponse.tripResult) {
+          localStorage.setItem(
+            "tripData",
+            JSON.stringify(geminiResponse.tripResult)
+          );
+        }
       } catch (error) {
         console.error("error while fetching response from gemini", error);
       }
@@ -95,6 +103,11 @@ function TripPlanner() {
       try {
         const photoURL = await getLocationPhoto(location);
         console.log("photoURL:", photoURL);
+
+        //store photo URL in local storage
+        if (photoURL) {
+          localStorage.setItem("locationPhoto", photoURL);
+        }
       } catch (error) {
         console.error("error fetching location photo:", error);
       }
@@ -104,128 +117,6 @@ function TripPlanner() {
       setShowLoader(false);
     }
   };
-
-  //main gemini function with photo fetch
-  // const handleSubmitUserData = async () => {
-  //   if (Object.keys(tripUserInput).length === 0) {
-  //     alert("please provide your info ");
-  //     return;
-  //   }
-
-  //   const { location, budget, noOfDays, travellingWith, travelMonth } =
-  //     tripUserInput;
-
-  //   if (!location || !budget || !noOfDays || !travellingWith || !travelMonth) {
-  //     alert("Please fill all required fields");
-  //     return;
-  //   }
-
-  //   // prepare prompt
-  //   const geminiPrompt = geminiPromptConstant
-  //     .replace("{location}", location)
-  //     .replace("{budget}", budget)
-  //     .replace("{travellingWith}", travellingWith)
-  //     .replace("{duration}", noOfDays)
-  //     .replace("{travelMonth}", travelMonth);
-
-  //   setShowLoader(true);
-
-  //   try {
-  //     // 1) call Gemini (await)
-  //     const geminiResponse = await chatSession.sendMessage(geminiPrompt);
-
-  //     // 2) normalize gemini text (handle both sync string or .response.text() async)
-  //     let geminiText = "";
-  //     try {
-  //       if (
-  //         geminiResponse &&
-  //         typeof geminiResponse.response?.text === "function"
-  //       ) {
-  //         geminiText = await geminiResponse.response.text();
-  //       } else if (typeof geminiResponse === "string") {
-  //         geminiText = geminiResponse;
-  //       } else if (
-  //         geminiResponse?.response &&
-  //         typeof geminiResponse.response === "string"
-  //       ) {
-  //         geminiText = geminiResponse.response;
-  //       } else {
-  //         // fallback to JSON stringify to ensure we store something useful
-  //         geminiText = JSON.stringify(geminiResponse);
-  //       }
-  //     } catch (err) {
-  //       console.warn(
-  //         "Failed to extract gemini text cleanly, falling back to stringify",
-  //         err
-  //       );
-  //       geminiText = JSON.stringify(geminiResponse);
-  //     }
-
-  //     // 3) fetch photos (await). fetchPlaceDataAndPhotos previously returned { dataId, photos } in our helpers.
-  //     let photos: any[] = [];
-  //     try {
-  //       const photosResult = await fetchPlaceDataAndPhotos(location);
-  //       // photosResult might be { dataId, photos } or an array; handle both
-  //       if (Array.isArray(photosResult)) {
-  //         photos = photosResult;
-  //       } else if (photosResult?.photos) {
-  //         photos = photosResult.photos;
-  //       } else if (photosResult?.result?.photos) {
-  //         photos = photosResult.result.photos;
-  //       } else {
-  //         // try if function returned { dataId, photos } as in shared helper
-  //         photos = photosResult?.photos ?? [];
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to fetch place photos:", err);
-  //       photos = [];
-  //     }
-
-  //     // 4) write everything to sessionStorage
-  //     try {
-  //       localStorage.setItem("userInput", JSON.stringify(tripUserInput));
-  //       localStorage.setItem(
-  //         "tripData",
-  //         typeof geminiText === "string"
-  //           ? geminiText
-  //           : JSON.stringify(geminiText)
-  //       );
-
-  //       // pick a safe photo url (try common fields and fallback)
-  //       const firstPhoto = photos?.[1] ?? photos?.[0] ?? null;
-  //       const photoUrl =
-  //         firstPhoto?.image ??
-  //         firstPhoto?.thumbnail ??
-  //         firstPhoto?.src ??
-  //         firstPhoto?.url ??
-  //         (typeof firstPhoto === "string" ? firstPhoto : null);
-
-  //       if (photoUrl) {
-  //         localStorage.setItem("placePhoto", photoUrl);
-  //       } else {
-  //         // optional: clear previous value if none found
-  //         localStorage.removeItem("placePhoto");
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to write to local Storage:", err);
-  //       // continue — storage failures shouldn't block navigation necessarily
-  //     }
-
-  //     // all done — hide loader and navigate
-  //     setShowLoader(false);
-  //     router.push("/trip-planner/my-trip");
-  //   } catch (error) {
-  //     console.error(
-  //       "error while fetching response from gemini or processing data",
-  //       error
-  //     );
-  //     setShowLoader(false);
-  //     // optionally show a user-friendly message:
-  //     alert(
-  //       "Something went wrong while generating your trip. Please try again."
-  //     );
-  //   }
-  // };
 
   return (
     <div className="w-screen flex justify-center items-center flex-col relative">
