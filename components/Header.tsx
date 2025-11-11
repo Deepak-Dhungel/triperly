@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "@/context/AuthContext";
 import ava from "@/public/3.png";
 import Image from "next/image";
 import PrimaryButton from "./ui-elements/PrimaryButton";
+import { AuthContext } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 function Header() {
-  const { isLoggedIn, setSignoutDialogOpen, signoutDialogOpen } =
+  const router = useRouter();
+  const { isLoggedIn, setSignoutDialog, signoutDialog } =
     useContext(AuthContext);
   const [openMenuDialog, setOpenMenuDialog] = useState(false);
   const menuDialogRef = useRef<HTMLDivElement | null>(null);
@@ -38,6 +40,11 @@ function Header() {
     };
   }, []);
 
+  function displayFirstName(fullName: string) {
+    const firstName = fullName.split(" ")[0];
+    return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  }
+
   return (
     <div className="flex justify-between items-center py-4 px-4 md:px-10 z-[8] fixed top-0 left-0 right-0 bg-[--bg-high] md:bg-transparent">
       <Link href="/" className="font-bold text-2xl">
@@ -48,9 +55,9 @@ function Header() {
         <div className="flex items-center gap-10 relative">
           <Link
             href="/dashboard"
-            className="border-[1px] border-gray-400 py-1 px-4 rounded-full cursor-pointer flex items-center"
+            className="cursor-pointer flex items-center gap-1 hover:text-[--accent]"
           >
-            My TripErly
+            Dashboard
           </Link>
           <div
             className="cursor-pointer"
@@ -69,16 +76,32 @@ function Header() {
           {openMenuDialog && (
             <div
               ref={menuDialogRef}
-              className="absolute md:right-0 top-14 bg-background border-[1px] z-10 w-[200px] p-4 rounded-lg drop-shadow-lg"
+              className="absolute md:right-0 top-14 bg-background border-[1px] z-10 w-[200px] p-2 rounded-lg drop-shadow-lg"
             >
-              <ul className="">
+              <ul className="space-y-4">
+                <li className="p-2">
+                  Hi,{" "}
+                  {isLoggedIn?.displayName &&
+                    displayFirstName(isLoggedIn.displayName)}
+                  !
+                </li>
+
                 <li
-                  className="cursor-pointer text-gray-500 hover:text-gray-800"
+                  className="p-2 cursor-pointer text-gray-500 rounded-lg hover:text-gray-800 hover:bg-orange-100"
                   onClick={() => {
-                    setSignoutDialogOpen(true);
+                    router.push("/dashboard");
                   }}
                 >
-                  Sign out
+                  Dashboard
+                </li>
+
+                <li
+                  className="p-2 cursor-pointer text-gray-500 rounded-lg hover:text-gray-800 hover:bg-orange-100"
+                  onClick={() => {
+                    setSignoutDialog(true);
+                  }}
+                >
+                  Log Out
                 </li>
               </ul>
             </div>
@@ -90,7 +113,7 @@ function Header() {
         </Link>
       )}
 
-      {signoutDialogOpen && <SignoutDialog />}
+      {signoutDialog && <SignoutDialog />}
     </div>
   );
 }
@@ -98,7 +121,7 @@ function Header() {
 export default Header;
 
 export function SignoutDialog() {
-  const { logoutUser, setSignoutDialogOpen } = useContext(AuthContext);
+  const { logoutUser, setSignoutDialog } = useContext(AuthContext);
   return (
     <div>
       <div className="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center z-50">
@@ -109,7 +132,7 @@ export function SignoutDialog() {
             <button
               className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
               onClick={() => {
-                setSignoutDialogOpen(false);
+                setSignoutDialog(false);
               }}
             >
               Cancel

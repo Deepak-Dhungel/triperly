@@ -2,12 +2,11 @@
 import Image from "next/image";
 import React, { useContext, useEffect } from "react";
 import paris from "@/public/paris.jpg";
-import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/context/AuthContext";
 
 function Dashboard() {
   const { isLoggedIn } = useContext(AuthContext);
-  console.log(isLoggedIn);
   const router = useRouter();
 
   useEffect(() => {
