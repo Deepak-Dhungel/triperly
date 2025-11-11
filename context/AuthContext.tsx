@@ -16,6 +16,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "@/service/firebase.config";
+import { AppContext } from "./AppContext";
 
 type AuthContextType = {
   isLoggedIn: User | undefined;
@@ -33,6 +34,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<User | undefined>(undefined);
   const [signoutDialog, setSignoutDialog] = useState(false);
+
+  const { setShowToast } = React.useContext(AppContext);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -52,6 +55,12 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error) {
       console.error("sign in error", error);
+    } finally {
+      setShowToast({
+        status: true,
+        type: "success",
+        message: "Signed in successfully",
+      });
     }
   }, []);
 
@@ -61,6 +70,12 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
       setSignoutDialog(false);
     } catch (error) {
       console.error("error while signing out", error);
+    } finally {
+      setShowToast({
+        status: true,
+        type: "success",
+        message: "Signed out successfully",
+      });
     }
   }, []);
 

@@ -7,6 +7,7 @@ import Image from "next/image";
 import PrimaryButton from "./ui-elements/PrimaryButton";
 import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { AppContext } from "@/context/AppContext";
 
 function Header() {
   const router = useRouter();
@@ -19,6 +20,8 @@ function Header() {
   const handleMenuDialog = () => {
     setOpenMenuDialog(!openMenuDialog);
   };
+
+  const { showToast, setShowToast } = useContext(AppContext);
 
   //
   useEffect(() => {
