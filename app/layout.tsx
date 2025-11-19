@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { Outfit } from "next/font/google";
 import { AuthContextProvider } from "@/context/AuthContext";
-import { AppContextProvider } from "@/context/AppContext";
+import { ToastContextProvider } from "@/context/ToastContext";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -24,12 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={outfit.className}>
       <body className="bg-background">
-        <AppContextProvider>
+        <ToastContextProvider>
           <AuthContextProvider>
             <Header />
             {children}
           </AuthContextProvider>
-        </AppContextProvider>
+        </ToastContextProvider>
       </body>
     </html>
   );

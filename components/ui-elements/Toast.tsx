@@ -1,11 +1,11 @@
 "use client";
 
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect } from "react";
 import { motion } from "motion/react";
-import { AppContext } from "@/context/AppContext";
+import { ToastContext } from "@/context/ToastContext";
 
 export default function Toast() {
-  const { showToast, setShowToast } = useContext(AppContext);
+  const { showToast, setShowToast } = useContext(ToastContext);
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -18,12 +18,6 @@ export default function Toast() {
   }, [showToast.status, setShowToast]);
 
   if (!showToast.status) return null;
-
-  //   const bgClass = useMemo(() => {
-  //     if (showToast.type === "success") return "bg-green-200";
-  //     if (showToast.type === "error") return "bg-red-200";
-  //     return "bg-blue-200";
-  //   }, [showToast.type]);
 
   return (
     <motion.div

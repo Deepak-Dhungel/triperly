@@ -1,18 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ava from "@/public/3.png";
 import Image from "next/image";
 import PrimaryButton from "./ui-elements/PrimaryButton";
-import { AuthContext } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { AppContext } from "@/context/AppContext";
 
 function Header() {
   const router = useRouter();
-  const { isLoggedIn, setSignoutDialog, signoutDialog } =
-    useContext(AuthContext);
+  const { user, initializing, signoutDialog, setSignoutDialog } = useAuth();
   const [openMenuDialog, setOpenMenuDialog] = useState(false);
   const menuDialogRef = useRef<HTMLDivElement | null>(null);
   const avatarRef = useRef<HTMLDivElement | null>(null);
@@ -21,9 +19,6 @@ function Header() {
     setOpenMenuDialog(!openMenuDialog);
   };
 
-  const { showToast, setShowToast } = useContext(AppContext);
-
-  //
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!(event.target instanceof Node)) return;
@@ -41,7 +36,7 @@ function Header() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [user]);
 
   function displayFirstName(fullName: string) {
     const firstName = fullName.split(" ")[0];
@@ -49,12 +44,12 @@ function Header() {
   }
 
   return (
-    <div className="flex justify-between items-center py-4 px-4 md:px-10 z-[8] fixed top-0 left-0 right-0 bg-[--bg-high] md:bg-transparent">
+    <header className="flex justify-between items-center py-4 px-4 md:px-10 z-[8] fixed top-0 left-0 right-0 bg-[--bg-high] md:bg-transparent">
       <Link href="/" className="font-bold text-2xl">
         TripErly
       </Link>
 
-      {isLoggedIn ? (
+      {user ? (
         <div className="flex items-center gap-10 relative">
           <Link
             href="/dashboard"
@@ -68,11 +63,11 @@ function Header() {
             ref={avatarRef}
           >
             <Image
-              src={isLoggedIn.photoURL || ava}
+              src={user.photoURL || ava}
               alt="avatar"
               height={40}
               width={40}
-              className="rounded-full  "
+              className="rounded-full "
             />
           </div>
 
@@ -83,10 +78,7 @@ function Header() {
             >
               <ul className="space-y-4">
                 <li className="p-2">
-                  Hi,{" "}
-                  {isLoggedIn?.displayName &&
-                    displayFirstName(isLoggedIn.displayName)}
-                  !
+                  Hi, {user?.displayName && displayFirstName(user.displayName)}!
                 </li>
 
                 <li
@@ -110,6 +102,8 @@ function Header() {
             </div>
           )}
         </div>
+      ) : initializing ? (
+        <div className="w-[40px] h-[40px] rounded-full bg-gray-300" />
       ) : (
         <Link href="/login">
           <PrimaryButton buttonText="Sign in" />
@@ -117,14 +111,14 @@ function Header() {
       )}
 
       {signoutDialog && <SignoutDialog />}
-    </div>
+    </header>
   );
 }
 
 export default Header;
 
 export function SignoutDialog() {
-  const { logoutUser, setSignoutDialog } = useContext(AuthContext);
+  const { logoutUser, setSignoutDialog } = useAuth();
   return (
     <div>
       <div className="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center z-50">

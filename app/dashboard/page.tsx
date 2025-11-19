@@ -1,24 +1,30 @@
 "use client";
 import Image from "next/image";
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import paris from "@/public/paris.jpg";
 import { useRouter } from "next/navigation";
-import { AuthContext } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 function Dashboard() {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!user) {
       router.push("/");
     }
-  }, [isLoggedIn, router]);
+  }, [user, router]);
 
   return (
-    <div className="my-10 px-4 md:px-40 z-[9]">
+    <div className="my-32 px-4 md:px-40 z-[9]">
       <div className="flex flex-col">
-        <span className="font-semibold text-3xl">Welcome Deepak,</span>
+        <span className="font-semibold text-3xl">
+          Welcome{" "}
+          {user?.displayName &&
+            user?.displayName.split(" ")[0].charAt(0).toUpperCase() +
+              user?.displayName.split(" ")[0].slice(1).toLowerCase()}
+          ,
+        </span>
         <span className="font-normal text-lg mt-2">
           Find trips that you have saved.
         </span>
