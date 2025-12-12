@@ -47,7 +47,6 @@ export const useAuth = () => {
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // const [isLoggedIn, setIsLoggedIn] = useState<User | undefined>(undefined);
   const [signoutDialog, setSignoutDialog] = useState(false);
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -66,74 +65,92 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  useEffect(() => {
-    console.log("initializing", initializing);
-  }, [initializing]);
-
-  useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      console.log("user is signed in", user);
-    } else {
-      console.log("no user is signed in");
-    }
-  }, [user]);
-
   const loginWithGoogle = useCallback(async (): Promise<void> => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
 
-      if (result.user) {
-        setUser(result.user);
-      }
-
-      const idToken = await user?.getIdToken();
+      const idToken = await result.user?.getIdToken();
 
       if (!idToken) {
         console.error("No ID token found for user");
         return;
       }
-      console.log("ID Token:", idToken);
-      try {
-        const res = await fetch("/api/auth/session", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ idToken }),
-        });
-        if (!res.ok) {
-          console.error("Failed to create session");
-          return;
-        }
-        router.push("/dashboard");
-      } catch (error) {
-        console.error("Error creating session:", error);
+
+      // create session on the server
+      const res = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to create session");
+        return;
       }
-    } catch (error) {
-      console.error("sign in error", error);
-    } finally {
+
+      // set user to a state
+      setUser(result.user);
+
+      // show success toast
       setShowToast({
         status: true,
         type: "success",
         message: "Signed in successfully",
+      });
+
+      // reduirect to dashboard after successful login
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("sign in error", error);
+
+      // show error toast on sign in failure
+      setShowToast({
+        status: true,
+        type: "error",
+        message: "Error signing in. Please try again.",
       });
     }
   }, []);
 
   const logoutUser = useCallback(async (): Promise<void> => {
     try {
+      // logout from firebase
       await signOut(auth);
+
+      // clear session cookie on the server
+      const res = await fetch("/api/auth/session", {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        console.error("Failed to clear session");
+      }
+
+      // clear user state
+      setUser(null);
+
+      // close the signout dialog if open
       setSignoutDialog(false);
-      router.push("/");
-    } catch (error) {
-      console.error("error while signing out", error);
-    } finally {
+
+      // show signout success toast
       setShowToast({
         status: true,
         type: "success",
         message: "Signed out successfully",
+      });
+
+      //redurect to home page
+      router.push("/");
+    } catch (error) {
+      console.error("error while signing out", error);
+
+      // show error toast on sign out failure
+      setShowToast({
+        status: true,
+        type: "error",
+        message: "Error signing out. Please try again.",
       });
     }
   }, []);
@@ -147,8 +164,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser,
       signoutDialog,
       setSignoutDialog,
-      // isLoggedIn,
-      // setIsLoggedIn,
     }),
     [
       user,
@@ -158,8 +173,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser,
       signoutDialog,
       setSignoutDialog,
-      // isLoggedIn,
-      // setIsLoggedIn,
     ]
   );
 

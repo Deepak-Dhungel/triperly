@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import admin from "firebase-admin";
-import { encrypt } from "@/service/session";
 import serviceAcc from "./sa.json";
 
 const serviceAccount = {
@@ -19,32 +18,27 @@ if (!admin.apps.length) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const idToken = body?.idToken;
-    if (!idToken) {
-      return NextResponse.json({ error: "Missing idToken" }, { status: 400 });
-    }
-    console.log("id token received...");
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      console.log("decoded...");
-      const sessionJwt = await encrypt({
-        uid: decoded.uid,
-        email: decoded.email,
-      });
-      console.log("session jwt created..");
-      const res = NextResponse.json({ ok: true });
-      console.log("res", res);
-      // Max-Age 7 days -> 7 * 24 * 60 * 60 = 604800
-      res.headers.set(
-        "Set-Cookie",
-        `session=${sessionJwt}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${604800}`
-      );
-      console.log("Session cookie set", res.headers.get("Set-Cookie"));
-      return res;
-    } catch (error) {
-      console.error("decode error", error);
-    }
+    const { idToken } = await req.json();
+
+    //verify token
+    await admin.auth().verifyIdToken(idToken);
+
+    //create session cookie
+    const sessionCookie = await admin
+      .auth()
+      .createSessionCookie(idToken, { expiresIn: 7 * 24 * 60 * 60 * 1000 });
+
+    // set cookie
+    const res = NextResponse.json({ ok: true });
+    res.cookies.set("session", sessionCookie, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      path: "/",
+    });
+
+    return res;
   } catch (err) {
     console.error("session create error", err);
     return NextResponse.json(
@@ -52,4 +46,27 @@ export async function POST(req: NextRequest) {
       { status: 401 }
     );
   }
+}
+
+export async function DELETE(req: NextRequest) {
+  const sessionCookie = req.cookies.get("session")?.value;
+
+  if (sessionCookie) {
+    try {
+      //revoke firebase session
+      const decodedClaims = await admin
+        .auth()
+        .verifySessionCookie(sessionCookie);
+      await admin.auth().revokeRefreshTokens(decodedClaims.sub);
+    } catch (err) {
+      console.error("Error revoking session:", err);
+    }
+  }
+
+  // clear session cookie
+  const res = NextResponse.json({ success: true });
+  res.cookies.delete("session");
+
+  console.log("cookies cleared");
+  return res;
 }
