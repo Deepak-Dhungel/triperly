@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import admin from "firebase-admin";
-import serviceAcc from "./sa.json";
 
 const serviceAccount = {
-  projectId: serviceAcc.project_id,
-  privateKey: serviceAcc.private_key,
-  clientEmail: serviceAcc.client_email,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
 };
 
 if (!admin.apps.length) {
