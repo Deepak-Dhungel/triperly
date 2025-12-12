@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
-import { AuthContextProvider } from "@/context/AuthContext";
 import { Outfit } from "next/font/google";
+import { AuthContextProvider } from "@/context/AuthContext";
+import { ToastContextProvider } from "@/context/ToastContext";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -23,10 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={outfit.className}>
       <body className="bg-background">
-        <AuthContextProvider>
-          <Header />
-          {children}
-        </AuthContextProvider>
+        <ToastContextProvider>
+          <AuthContextProvider>
+            <Header />
+            {children}
+          </AuthContextProvider>
+        </ToastContextProvider>
       </body>
     </html>
   );

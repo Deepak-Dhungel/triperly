@@ -3,9 +3,9 @@
 import React, { useContext, useEffect } from "react";
 import Image from "next/image";
 import GoogleIcon from "@/public/google-icon.svg";
-import { AuthContext } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import PrimaryButton from "@/components/ui-elements/PrimaryButton";
+import { AuthContext } from "@/context/AuthContext";
 
 function LoginPage() {
   const router = useRouter();
@@ -19,8 +19,7 @@ function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      console.log("Login with Google");
-      loginWithGoogle();
+      await loginWithGoogle();
       if (isLoggedIn) {
         router.push(redirectPath);
       }
@@ -78,7 +77,7 @@ function LoginPage() {
         <span>OR</span>
 
         <div
-          className="mt-4 h-12 rounded-lg flex gap-3 items-center justify-between px-6 bg-orange-200 hover:bg-orange-300 cursor-pointer "
+          className="mt-4 h-12 rounded-lg flex gap-3 items-center justify-between px-6 border-2 border-orange-400 hover:border-[--accent] cursor-pointer "
           onClick={handleGoogleLogin}
         >
           <Image
