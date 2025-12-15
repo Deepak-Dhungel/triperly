@@ -13,6 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { TripUserInputType } from "@/types/trip.types";
 import OptionCard from "@/components/ui-elements/OptionCard";
 import { getLocationPhoto } from "@/service/locationPhoto";
+import { useRouter } from "next/navigation";
 
 function TripPlanner() {
   const [tripUserInput, setTripUserInput] = useState<TripUserInputType>({
@@ -25,6 +26,8 @@ function TripPlanner() {
   const [showLoader, setShowLoader] = useState(false);
   const searchParams = useSearchParams();
   const [errors, setErrors] = useState<{ noOfDays?: string }>({});
+
+  const router = useRouter();
 
   useEffect(() => {
     if (searchParams) {
@@ -108,6 +111,9 @@ function TripPlanner() {
         if (photoURL) {
           localStorage.setItem("locationPhoto", photoURL);
         }
+
+        // redirect to my-trip page
+        router.push("/trip-planner/my-trip");
       } catch (error) {
         console.error("error fetching location photo:", error);
       }

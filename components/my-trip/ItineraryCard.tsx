@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import placeholder from "@/public/paris.jpg";
-import { fetchPlacePhoto } from "@/service/googlePlaceApi";
+// import { fetchPlacePhoto } from "@/service/googlePlaceApi";
 
 type ItineraryCardType = {
   itineraryInfo: ItineraryType;
@@ -50,15 +50,15 @@ type ItinearyItemCardType = {
 export function ItinearyItemCard({ place }: ItinearyItemCardType) {
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    const loadImage = async () => {
-      if (place.name) {
-        const src = await fetchPlacePhoto(place.name);
-        setImageSrc(src);
-      }
-    };
-    loadImage();
-  }, [place]);
+  // useEffect(() => {
+  //   const loadImage = async () => {
+  //     if (place.name) {
+  //       const src = await fetchPlacePhoto(place.name);
+  //       setImageSrc(src);
+  //     }
+  //   };
+  //   loadImage();
+  // }, [place]);
 
   // Render a fallback if the image URL isn't available yet
   //   if (!imageSrc) {
