@@ -1,3 +1,5 @@
+// this page is for trip planner where user inputs their travel preferences
+
 "use client";
 
 import Loader from "@/components/Loader";

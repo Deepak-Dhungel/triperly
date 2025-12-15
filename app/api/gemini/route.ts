@@ -1,6 +1,7 @@
 import { getResponseFromGemini } from "@/service/gemini";
 import { GenerateContentResult } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { v4 as uuid } from "uuid";
 
 export async function POST(req: Request) {
   const { prompt } = await req.json();
@@ -27,6 +28,10 @@ export async function POST(req: Request) {
       const geminiData = candidate.content.parts[0].text;
       if (geminiData) {
         const tripResult = JSON.parse(geminiData);
+
+        // generata unique trip id for this result
+        const tripId = uuid();
+        tripResult.tripId = tripId;
         return NextResponse.json({ tripResult });
       }
     }
