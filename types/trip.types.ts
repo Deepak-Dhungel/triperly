@@ -41,6 +41,11 @@ export type ItineraryPlaceType = {
 };
 
 export type TripSummaryType = {
+  duration: string;
+  location: string;
+  travelMonth: string;
   summaryText: string;
   totalCost: string;
+  travellingWith: string;
+  userBudgetChoice: string;
 };

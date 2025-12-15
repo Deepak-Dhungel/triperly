@@ -3,7 +3,7 @@ import { HotelRecommendationType } from "@/types/trip.types";
 import Image from "next/image";
 import placeholder from "@/public/hotel-placeholder.jpg";
 import { useEffect, useState } from "react";
-import { fetchPlacePhoto } from "@/service/googlePlaceApi";
+// import { fetchPlacePhoto } from "@/service/googlePlaceApi";
 
 import Paris from "@/public/paris.jpg";
 
@@ -14,17 +14,17 @@ type HotelCardType = {
 export function HotelCard({ hotelInfo }: HotelCardType) {
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    const loadImage = async () => {
-      if (hotelInfo.name) {
-        const hotelNameWithAddress = `${hotelInfo.name}, ${hotelInfo.hotelLocation}`;
-        // console.log("hotel name:", hotelNameWithAddress);
-        const src = await fetchPlacePhoto(hotelNameWithAddress);
-        setImageSrc(src);
-      }
-    };
-    loadImage();
-  }, [hotelInfo]);
+  // useEffect(() => {
+  //   const loadImage = async () => {
+  //     if (hotelInfo.name) {
+  //       const hotelNameWithAddress = `${hotelInfo.name}, ${hotelInfo.hotelLocation}`;
+  //       // console.log("hotel name:", hotelNameWithAddress);
+  //       const src = await fetchPlacePhoto(hotelNameWithAddress);
+  //       setImageSrc(src);
+  //     }
+  //   };
+  //   loadImage();
+  // }, [hotelInfo]);
 
   // Render a fallback if the image URL isn't available yet
   // if (!imageSrc) {
@@ -50,7 +50,7 @@ export function HotelCard({ hotelInfo }: HotelCardType) {
           alt="location"
           fill
           className="object-cover object-center"
-          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
         />
       </div>
 
