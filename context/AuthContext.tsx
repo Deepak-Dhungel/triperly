@@ -24,8 +24,6 @@ import { useRouter } from "next/navigation";
 type AuthContextType = {
   user: User | null;
   initializing: boolean;
-  // isLoggedIn: User | undefined;
-  // setIsLoggedIn: Dispatch<SetStateAction<User | undefined>>;
   loginWithGoogle: () => Promise<void>;
   logoutUser: () => Promise<void>;
   signoutDialog: boolean;
@@ -52,7 +50,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [initializing, setInitializing] = useState(true);
 
-  const { setShowToast } = React.useContext(ToastContext);
+  const { setShowToast } = useContext(ToastContext);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {

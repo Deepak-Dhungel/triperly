@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import { BsBookmarkFill } from "react-icons/bs";
 import { TripDataType } from "@/types/trip.types";
@@ -8,14 +8,16 @@ import { HotelCard } from "@/components/my-trip/HotelCard";
 import { ItineraryCard } from "@/components/my-trip/ItineraryCard";
 import { useAuth } from "@/context/AuthContext";
 import BookmarkIcon from "@/public/bookmark-icon.png";
+import { ToastContext } from "@/context/ToastContext";
 
 function TripSearchResult() {
   const [tripData, setTripData] = useState<TripDataType>({} as TripDataType);
   const [locationPhoto, setLocationPhoto] = useState<string | StaticImageData>(
     ""
   );
-  const [showSaveBtn, setShowSaveBtn] = useState(false);
+
   const { user } = useAuth(); // logged in user
+  const { setShowToast } = useContext(ToastContext);
 
   useEffect(() => {
     const storedTripData = localStorage.getItem("tripData");
@@ -40,19 +42,40 @@ function TripSearchResult() {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("user", user);
-  }, [user]);
-
-  function handleSaveTrip() {
+  async function handleSaveTrip() {
     //check if user is logged in
     if (!user) {
-      // router.push("/login?redirect=/trip-planner/my-trip");
+      setShowToast({
+        status: true,
+        type: "warning",
+        message: "Please login to save your trip",
+      });
     }
 
-    //if not logged in, take to login page
+    //if user signed in, call the API to save trip data
+    console.log("user id and data", user?.uid, tripData);
+    const res = await fetch("/api/trips", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: "111",
+        trip: tripData,
+      }),
+    });
 
-    //else add data to firestore db
+    if (res.ok) {
+      setShowToast({
+        status: true,
+        type: "success",
+        message: "Trip saved successfully!",
+      });
+    } else {
+      setShowToast({
+        status: true,
+        type: "error",
+        message: "Failed to save the trip. Please try again.",
+      });
+    }
   }
 
   // redirect to trip-planner page if userInputData or tripData is null
@@ -156,23 +179,20 @@ function TripSearchResult() {
         </div>
       </div>
 
-      {/* floating save button */}
-      {showSaveBtn && (
-        <div
-          className={`flex items-center gap-4 px-4 py-2 bg-gray-600 w-fit rounded-full fixed bottom-4 
-            left-1/2 -translate-x-1/2 cursor-pointer text-white 
-            transition-all duration-300 ease-in-out hover:px-8 hover:py-3 hover:bg-gray-800`}
-          onClick={handleSaveTrip}
-        >
-          <BsBookmarkFill />
-          <span
-            className={`transition-all duration-300 ease-in-out 
+      <div
+        className={`flex items-center gap-4 px-4 py-2 bg-white/30 backdrop-blur-md w-fit border-[--accent] border-2 rounded-full fixed bottom-4 
+            left-1/2 -translate-x-1/2 cursor-pointer text-[--accent] 
+            transition-all duration-300 ease-in-out hover:px-8 hover:py-3 hover:bg-[--accent] hover:text-white`}
+        onClick={handleSaveTrip}
+      >
+        <BsBookmarkFill />
+        <span
+          className={`transition-all duration-300 ease-in-out 
              overflow-hidden`}
-          >
-            Save this to My TripErly
-          </span>
-        </div>
-      )}
+        >
+          Save this to My TripErly
+        </span>
+      </div>
     </div>
   );
 }

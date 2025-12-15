@@ -1,7 +1,6 @@
 import AboutSection from "@/components/AboutSection";
 import HeroSection from "@/components/HeroSection";
 import RecentDestinations from "@/components/RecentDestinations";
-import Toast from "@/components/ui-elements/Toast";
 
 export default function Home() {
   return (
@@ -12,7 +11,6 @@ export default function Home() {
         <AboutSection />
         <RecentDestinations />
       </div>
-      <Toast />
     </div>
   );
 }

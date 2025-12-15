@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { Outfit } from "next/font/google";
 import { AuthContextProvider } from "@/context/AuthContext";
 import { ToastContextProvider } from "@/context/ToastContext";
+import Toast from "@/components/ui-elements/Toast";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
         <ToastContextProvider>
           <AuthContextProvider>
             <Header />
+            <Toast />
             {children}
           </AuthContextProvider>
         </ToastContextProvider>
