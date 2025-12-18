@@ -128,6 +128,9 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("Failed to clear session");
       }
 
+      // clear localStorage
+      localStorage.clear();
+
       // clear user state
       setUser(null);
 
