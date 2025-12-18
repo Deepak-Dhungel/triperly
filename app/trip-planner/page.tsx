@@ -61,6 +61,7 @@ function TripPlanner() {
 
   const handleSubmitUserData = async () => {
     try {
+      let tripResult = null;
       const { location, budget, noOfDays, travellingWith, travelMonth } =
         tripUserInput;
       if (
@@ -91,14 +92,12 @@ function TripPlanner() {
           body: JSON.stringify({ prompt: geminiPrompt }),
         });
         const geminiResponse = await connectWithGemini.json();
-        console.log("first", geminiResponse);
+        console.log("gemini response", geminiResponse);
 
         //store trip data in local storage
         if (geminiResponse.tripResult) {
-          localStorage.setItem(
-            "tripData",
-            JSON.stringify(geminiResponse.tripResult)
-          );
+          tripResult = geminiResponse.tripResult;
+          localStorage.setItem("tripData", JSON.stringify(tripResult));
         }
       } catch (error) {
         console.error("error while fetching response from gemini", error);
@@ -107,18 +106,17 @@ function TripPlanner() {
       // fetch location photo
       try {
         const photoURL = await getLocationPhoto(location);
-        console.log("photoURL:", photoURL);
 
         //store photo URL in local storage
         if (photoURL) {
           localStorage.setItem("locationPhoto", photoURL);
         }
-
-        // redirect to my-trip page
-        router.push("/trip-planner/my-trip");
       } catch (error) {
         console.error("error fetching location photo:", error);
       }
+
+      // redirect to my-trip page
+      router.push(`/trip-planner/my-trip/${tripResult.tripId}`);
     } catch (error) {
       console.log("error fetching photo:", error);
     } finally {
@@ -241,7 +239,9 @@ function TripPlanner() {
             </button>
           </div>
         </div>
-        {showLoader && <Loader />}
+        {showLoader && (
+          <Loader message="Finding best trip options for you..." />
+        )}
       </div>
     </div>
   );

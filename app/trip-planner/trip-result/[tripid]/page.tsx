@@ -9,6 +9,7 @@ import { ItineraryCard } from "@/components/my-trip/ItineraryCard";
 import { useAuth } from "@/context/AuthContext";
 import BookmarkIcon from "@/public/bookmark-icon.png";
 import { ToastContext } from "@/context/ToastContext";
+import Loader from "@/components/Loader";
 
 function TripSearchResult() {
   const [tripData, setTripData] = useState<TripDataType>({} as TripDataType);
@@ -18,6 +19,7 @@ function TripSearchResult() {
 
   const { user } = useAuth(); // logged in user
   const { setShowToast } = useContext(ToastContext);
+  const [showLoader, setShowLoader] = useState(false);
 
   useEffect(() => {
     const storedTripData = localStorage.getItem("tripData");
@@ -53,17 +55,18 @@ function TripSearchResult() {
     }
 
     //if user signed in, call the API to save trip data
-    console.log("user id and data", user?.uid, tripData);
+    setShowLoader(true);
     const res = await fetch("/api/trips", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        userId: "111",
+        userId: user?.uid,
         trip: tripData,
       }),
     });
 
     if (res.ok) {
+      setShowLoader(false);
       setShowToast({
         status: true,
         type: "success",
@@ -111,7 +114,7 @@ function TripSearchResult() {
           <span className={bannerImageChipsClass}>
             📅
             <span>
-              {tripData?.tripSummary?.duration} Day(s) during{" "}
+              {tripData?.tripSummary?.duration} during{" "}
               {tripData?.tripSummary?.travelMonth}
             </span>
           </span>
@@ -193,6 +196,7 @@ function TripSearchResult() {
           Save this to My TripErly
         </span>
       </div>
+      {showLoader && <Loader message="Saving your trip..." />}
     </div>
   );
 }
