@@ -1,26 +1,26 @@
 "use client";
 
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import GoogleIcon from "@/public/google-icon.svg";
 import { useRouter, useSearchParams } from "next/navigation";
 import PrimaryButton from "@/components/ui-elements/PrimaryButton";
-import { AuthContext } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 function LoginPage() {
   const router = useRouter();
-  const { loginWithGoogle, isLoggedIn } = useContext(AuthContext);
+  const { loginWithGoogle, user } = useAuth();
   const searchParams = useSearchParams();
   const redirectPath = searchParams?.get("redirect") || "/";
 
   useEffect(() => {
-    if (isLoggedIn) router.push("/");
-  }, [isLoggedIn, router]);
+    if (user) router.push("/");
+  }, [user]);
 
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
-      if (isLoggedIn) {
+      if (user) {
         router.push(redirectPath);
       }
     } catch (error) {
