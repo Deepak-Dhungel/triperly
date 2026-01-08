@@ -1,4 +1,3 @@
-"use client";
 import { HotelRecommendationType } from "@/types/trip.types";
 import Image from "next/image";
 import placeholder from "@/public/hotel-placeholder.jpg";
