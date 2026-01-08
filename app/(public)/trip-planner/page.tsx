@@ -1,5 +1,3 @@
-// this page is for trip planner where user inputs their travel preferences
-
 "use client";
 
 import Loader from "@/components/Loader";
@@ -10,14 +8,14 @@ import {
   travelMonth,
 } from "@/constants/trip-planner.constant";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { TripUserInputType } from "@/types/trip.types";
 import OptionCard from "@/components/ui-elements/OptionCard";
 import { getLocationPhoto } from "@/service/locationPhoto";
 import { useRouter } from "next/navigation";
 
-function TripPlanner() {
+function TripPlannerInner() {
   const [tripUserInput, setTripUserInput] = useState<TripUserInputType>({
     location: "",
     budget: "",
@@ -252,4 +250,10 @@ function TripPlanner() {
   );
 }
 
-export default TripPlanner;
+export default function TripPlannerPage() {
+  return (
+    <Suspense fallback={null}>
+      <TripPlannerInner />
+    </Suspense>
+  );
+}

@@ -1,16 +1,14 @@
 "use client";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import paris from "@/public/paris.jpg";
+
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/Loader";
+import { SavedTripCard } from "@/components/SavedTripCard";
 
 function Dashboard() {
   const { user } = useAuth();
   const [savedUserTrips, setSavedUserTrips] = useState<null | []>(null);
   const [showLoader, setShowLoader] = useState(false);
-
-  console.log("Dashboard rendered with user");
 
   useEffect(() => {
     if (!user) return;
@@ -48,8 +46,6 @@ function Dashboard() {
     }
   }
 
-  console.log(savedUserTrips);
-
   return (
     <div className="mt-[70px] pt-10 px-4 md:px-40 border-t-2">
       {showLoader && <Loader message="Getting your trips..." />}
@@ -74,15 +70,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
-export function SavedTripCard() {
-  return (
-    <div className="w-[20%] flex flex-col gap-2 rounded-xl p-2 transition-all hover:scale-110">
-      <Image src={paris} alt="trip-location" className="rounded-xl" />
-      <div className="flex flex-col">
-        <span className="mt-2 text-lg font-semibold">Paris, France</span>
-        <span className="text-xs">2 Days trip with Cheap Budget</span>
-      </div>
-    </div>
-  );
-}

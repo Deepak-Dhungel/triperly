@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import Image from "next/image";
 import GoogleIcon from "@/public/google-icon.svg";
 import { useRouter, useSearchParams } from "next/navigation";
 import PrimaryButton from "@/components/ui-elements/PrimaryButton";
 import { useAuth } from "@/context/AuthContext";
 
-function LoginPage() {
+function LoginInner() {
   const router = useRouter();
   const { loginWithGoogle, user } = useAuth();
   const searchParams = useSearchParams();
@@ -94,4 +94,10 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
+  );
+}

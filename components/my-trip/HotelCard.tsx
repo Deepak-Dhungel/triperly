@@ -2,45 +2,12 @@
 import { HotelRecommendationType } from "@/types/trip.types";
 import Image from "next/image";
 import placeholder from "@/public/hotel-placeholder.jpg";
-import { useEffect, useState } from "react";
-// import { fetchPlacePhoto } from "@/service/googlePlaceApi";
-
-import Paris from "@/public/paris.jpg";
 
 type HotelCardType = {
   hotelInfo: HotelRecommendationType;
 };
 
 export function HotelCard({ hotelInfo }: HotelCardType) {
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
-
-  // useEffect(() => {
-  //   const loadImage = async () => {
-  //     if (hotelInfo.name) {
-  //       const hotelNameWithAddress = `${hotelInfo.name}, ${hotelInfo.hotelLocation}`;
-  //       // console.log("hotel name:", hotelNameWithAddress);
-  //       const src = await fetchPlacePhoto(hotelNameWithAddress);
-  //       setImageSrc(src);
-  //     }
-  //   };
-  //   loadImage();
-  // }, [hotelInfo]);
-
-  // Render a fallback if the image URL isn't available yet
-  // if (!imageSrc) {
-  //   return (
-  //     <div className="w-[150] h-[150px] relative">
-  //       <Image
-  //         src={placeholder}
-  //         alt="location"
-  //         fill
-  //         className="rounded-xl object-cover w-[auto] h-[auto]"
-  //         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-  //         priority
-  //       />
-  //     </div>
-  //   );
-  // }
   return (
     <div className="w-full h-auto flex flex-col gap-2 rounded-xl p-2 bg-[--bg-high]">
       {/* image: fill the card width and keep a fixed height */}
