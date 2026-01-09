@@ -3,6 +3,9 @@ import type { NextRequest } from "next/server";
 import admin from "firebase-admin";
 import { adminAuth } from "@/service/firebaseAdmin";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(req: NextRequest) {
   try {
     const { idToken } = await req.json();
