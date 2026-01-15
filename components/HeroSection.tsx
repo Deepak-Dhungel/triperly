@@ -6,13 +6,16 @@ import { appData } from "@/constants/home-page.constant";
 
 function HeroSection() {
   const [destination, setDestination] = useState("");
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!destination) alert("Add your destination");
-    else
+    if (!destination) {
+      setError("Please enter a destination.");
+      return;
+    } else
       router.push(
         `/trip-planner?destination=${encodeURIComponent(destination)}`
       );
@@ -51,33 +54,38 @@ function HeroSection() {
         {appData.heroSection.desc}
       </p>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-10 relative flex items-center"
-        role="search"
-        aria-label="Search destinations"
-      >
-        <input
-          type="text"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          className="mt-4 py-3 px-6 bg-transparent rounded-lg border-2 w-[350px] md:w-[500px] border-[--accent] focus:outline-none placeholder:text-gray-400 placeholder:text-sm placeholder:font-thin"
-          placeholder="Search destination, ex. Paris, France"
-          aria-label="Destination"
-        />
-
-        <button
-          type="submit"
-          className="bg-[--accent] p-3 rounded-lg w-11 h-11 absolute right-1 top-5 flex items-center justify-center hover:opacity-90"
-          aria-label="Search / go to trip planner"
+      <div className="relative">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-10 relative flex items-center"
+          role="search"
+          aria-label="Search destinations"
         >
-          <PiPaperPlaneRightFill className="text-white" size={18} />
-        </button>
-      </form>
+          <input
+            type="text"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            className="mt-4 py-3 px-6 bg-transparent rounded-lg border-2 w-[350px] md:w-[500px] border-[--accent] focus:outline-none placeholder:text-gray-400 placeholder:text-sm placeholder:font-thin"
+            placeholder="Search destination, ex. Paris, France"
+            aria-label="Destination"
+          />
+
+          <button
+            type="submit"
+            className="bg-[--accent] p-3 rounded-lg w-11 h-11 absolute right-1 top-5 flex items-center justify-center hover:opacity-90"
+            aria-label="Search / go to trip planner"
+          >
+            <PiPaperPlaneRightFill className="text-white" size={18} />
+          </button>
+        </form>
+        {error && (
+          <span className="text-sm text-red-600 absolute bg-red-100 w-full p-2 rounded-lg mt-1">
+            {error}
+          </span>
+        )}
+      </div>
     </section>
   );
 }
 
 export default HeroSection;
-
-// bg-gradient-to-br from-gradient1 via-gradient2 to-gradient3 drop-shadow-2xl

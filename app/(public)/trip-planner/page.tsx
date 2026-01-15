@@ -26,6 +26,7 @@ function TripPlannerInner() {
   const [showLoader, setShowLoader] = useState(false);
   const searchParams = useSearchParams();
   const [errors, setErrors] = useState<{ noOfDays?: string }>({});
+  const [missingInputError, setMissingInputError] = useState(false);
 
   const router = useRouter();
 
@@ -74,7 +75,7 @@ function TripPlannerInner() {
         !travellingWith ||
         !travelMonth
       ) {
-        alert("Please fill all required fields");
+        setMissingInputError(true);
         return;
       }
       setShowLoader(true);
@@ -163,7 +164,7 @@ function TripPlannerInner() {
               type="text" // keep type text to avoid spinners; can be "number" too
               inputMode="numeric" // show numeric keyboard on mobile
               pattern="\d*" // optional
-              className={`mt-4 py-2 px-6 rounded-lg focus:outline-orange-300 ${
+              className={`mt-4 py-2 px-6 rounded-lg focus:outline-[--accent-light] ${
                 errors.noOfDays
                   ? "placeholder:text-red-600"
                   : "placeholder:text-gray-300"
@@ -212,7 +213,7 @@ function TripPlannerInner() {
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col w-full">
+          <div className="mt-12 flex flex-col w-full mb-20">
             <span className="text-xl font-medium">
               When do you plan to travel?
             </span>
@@ -233,8 +234,15 @@ function TripPlannerInner() {
             </div>
           </div>
 
+          {!missingInputError && (
+            <span className="mb-2 text-sm text-red-600 bg-red-100 w-full p-2 rounded-lg">
+              Looks like something’s missing. Please complete all required
+              selections.
+            </span>
+          )}
+
           <div
-            className="mt-20 h-12 w-full cursor-pointer"
+            className="h-12 w-full cursor-pointer"
             onClick={handleSubmitUserData}
           >
             <button className="h-12 w-full bg-[--accent] hover:bg-[#e63d03] hover:drop-shadow-md rounded-lg text-center text-white flex items-center justify-center">
