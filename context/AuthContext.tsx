@@ -48,12 +48,13 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [signoutDialog, setSignoutDialog] = useState(false);
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [initializing, setInitializing] = useState(true);
+  const [initializing, setInitializing] = useState(false);
 
   const { setShowToast } = useContext(ToastContext);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
+      setInitializing(true);
       setUser(u);
       setInitializing(false);
     });
