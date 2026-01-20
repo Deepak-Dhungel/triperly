@@ -1,5 +1,5 @@
 import Image from "next/image";
-import paris from "@/public/paris.jpg";
+import paris from "@/public/places/paris.jpg";
 
 export function SavedTripCard() {
   return (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import ava from "@/public/3.png";
+import ava from "@/public/avatar_placeholder.webp";
 import Image from "next/image";
 import PrimaryButton from "./ui-elements/PrimaryButton";
 import { useAuth } from "@/context/AuthContext";
