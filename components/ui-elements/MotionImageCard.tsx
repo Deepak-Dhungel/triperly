@@ -33,7 +33,7 @@ function MotionImageCard({
 
   return (
     <motion.div
-      className="bg-[--bg-high] rounded-lg drop-shadow-2xl transition-transform duration-300 ease-out"
+      className="bg-[--bg-high] rounded-lg drop-shadow-2xl transition-transform duration-300 ease-out border-4 border-white"
       initial={initial}
       whileInView={whileInView}
       whileHover={whileHover}
