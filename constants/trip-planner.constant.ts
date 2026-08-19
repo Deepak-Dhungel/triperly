@@ -57,7 +57,7 @@ export const travelMonth = [
   },
   {
     icon: "🍁",
-    season: "Autumn",
+    season: "Fall",
     months: "September-November",
   },
 ];

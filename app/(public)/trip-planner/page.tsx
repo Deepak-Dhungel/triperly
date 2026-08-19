@@ -14,6 +14,7 @@ import { TripUserInputType } from "@/types/trip.types";
 import OptionCard from "@/components/ui-elements/OptionCard";
 import { getLocationPhoto } from "@/service/locationPhoto";
 import { useRouter } from "next/navigation";
+import TripPlannerForm from "@/components/trip-planner/TripPlannerForm";
 
 function TripPlannerInner() {
   const [tripUserInput, setTripUserInput] = useState<TripUserInputType>({
@@ -142,7 +143,9 @@ function TripPlannerInner() {
           </span>
         </div>
 
-        <div className="mt-12 rounded-lg bg-[--bg-high] drop-shadow-2xl flex flex-col justify-center items-start p-6 md:p-10">
+        <TripPlannerForm />
+
+        {/* <div className="mt-12 rounded-lg bg-[--bg-high] drop-shadow-2xl flex flex-col justify-center items-start p-6 md:p-10">
           <div className="flex flex-col w-full">
             <span className="text-xl font-medium">
               What is the destination of your choice?
@@ -249,7 +252,7 @@ function TripPlannerInner() {
               Analyze my information
             </button>
           </div>
-        </div>
+        </div> */}
         {showLoader && (
           <Loader message="Finding best trip options for you..." />
         )}

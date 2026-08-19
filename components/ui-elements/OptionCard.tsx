@@ -3,7 +3,7 @@ import React from "react";
 const OptionCard: React.FC<{
   active: boolean;
   onClick: () => void;
-  title: string;
+  title?: string;
   desc?: string;
   icon?: React.ReactNode;
 }> = ({ active, onClick, title, desc, icon }) => {
